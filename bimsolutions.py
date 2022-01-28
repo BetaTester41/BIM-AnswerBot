@@ -28,8 +28,11 @@ class bimsolutions:
                         status = 1
                 if status == 0:
                     image = Image.open(filename).convert("RGBA")
-                    new_image = Image.new("RGBA", image.size, "WHITE")
-                    new_image.paste(image, mask=image)
+                    width, height = image.size
+                    new_width = width + 10
+                    new_height = height + 10
+                    new_image = Image.new("RGBA", (new_width, new_height), "WHITE")
+                    new_image.paste(image, (5, 5), mask=image)
                     new_image.convert("RGB").save(filename)
                     self.answer = "Success"
         else:
