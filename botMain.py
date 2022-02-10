@@ -1,12 +1,11 @@
 import discord
 import os
-import PIL
 from os.path import exists
 from discord.ext import commands
 from bimsolutions import bimsolutions
 
 # Variables
-bot = commands.Bot(command_prefix='bim.')
+bot = commands.Bot(command_prefix='bim.', help_command=None)
 filename = "answer.png" # Has to end in .png
 # Colors
 bot.colorError = discord.Color.red()
@@ -59,7 +58,7 @@ async def on_ready():
 @bot.command(alias=['answer'])
 async def answer(ctx, book = None, chapter = None, lesson = None, question = None):
     if any(x is None for x in [book, chapter, lesson, question]):
-        await ctx.send("Error: Please enter all arguments.")
+        await ctx.send("Error: Please enter all arguments.\n Format: `prefix.answer book chapter lesson question` (e.g. `prefix.answer alg1 1 1 1`)")
         return
     else:
         answer = str(bimsolutions(book, chapter, lesson, question, filename))
@@ -69,4 +68,11 @@ async def answer(ctx, book = None, chapter = None, lesson = None, question = Non
             print(answer)
             file = discord.File(os.path.abspath(filename), filename=filename)
             await ctx.send(file=file, embed=embedMaker("Answer Found!",bot.colorSuccess,None,"attachment://" + filename))
+
+@bot.command(alias=['help'])
+async def help(ctx):
+    embed=discord.Embed(title="Help", color=bot.colorInfo)
+    embed.add_field(name="Format", value="`prefix.answer <book> <chapter> <lesson> <question>`", inline=False)
+    embed.add_field(name="Values", value="**book** is `geo, alg1, or alg2`\n**chapter, lesson** is `a valid positive integer up to 99 or cr`\n**question** is `a valid positive integer up to 999`", inline=False)
+    await ctx.reply(embed=embed)
 bot.run(token)
